@@ -1,0 +1,13 @@
+TASK_DESCRIPTION                                                                            STATUS
+
+
+Creating main window                                                                        PENDING
+Designing login window                                                                      PENDING
+Designing sign up window                                                                    PENDING
+Designing profile/dial window                                                               PENDING
+Designing category selection window                                                         PENDING
+Designing chatting window                                                                   PENDING
+Creating databse                                                                            PENDING
+Creating agent assigning AI                                                                 PENDING
+Connecing database with UI                                                                  PENDING
+Integrating AI with UI and Database                                                         PENDING
