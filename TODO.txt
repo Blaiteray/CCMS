@@ -5,6 +5,7 @@ Creating main window                                                            
 Designing login window                                                                      PENDING
 Designing sign up window                                                                    PENDING
 Designing profile/dial window                                                               PENDING
+Designing purchase window                                                                   PENDING
 Designing category selection window                                                         PENDING
 Designing chatting window                                                                   PENDING
 Creating databse                                                                            PENDING
