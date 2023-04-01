@@ -87,6 +87,17 @@ class MainLayout(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         #write your code from here
+        button1 = Button(text='Click Me', pos=(100, 100), size=(200, 100), size_hint=(None, None))
+        button1.bind(on_release=self.foo)
+        self.input_me = TextInput(hint_text="Write_Something", pos=(500, 100), size=(200, 100), size_hint=(None, None))
+        self.label1 = Label(text="Hello World", pos=(100, 300), size=(600, 100), size_hint=(None, None))
+        self.add_widget(self.input_me)
+        self.add_widget(button1)
+        self.add_widget(self.label1)
+
+    def foo(self, i):
+        self.label1.text = self.input_me.text
+        print(self.input_me.text)
 
 
 
