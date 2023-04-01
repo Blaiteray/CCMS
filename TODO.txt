@@ -2,7 +2,6 @@ TASK_DESCRIPTION                                                                
 
 
 Creating main window                                                                        PENDING
-Designing login window                                                                      PENDING
 Designing signup window                                                                     PENGING
 Designing sign up window                                                                    PENDING
 Designing profile/dial window                                                               PENDING
