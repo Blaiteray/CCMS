@@ -62,6 +62,9 @@ shift_start_time text,
 shift_end_time text
     )""")
 
+# # inserting data in the table manually
+# c.execute("INSERT INTO client VALUES ('BigC', 'Shoabur Rahman', 'Chishty', 'abc234', 'Male', '01/01/1999', 01712121212, 'chishty828rahman@gmail.com', 23)")
+
 # commit command
 conn.commit()
 
