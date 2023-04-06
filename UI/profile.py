@@ -33,9 +33,6 @@ class Profile_Widget(FloatLayout):
         
         
 
-        self.add_widget(self.username)
-        self.add_widget(self.full_name)
-
         
 
 
