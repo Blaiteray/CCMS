@@ -2,12 +2,17 @@ TASK_DESCRIPTION                                                                
 
 
 Creating main window                                                                        PENDING
-Designing signup window                                                                     PENGING
-Designing sign up window                                                                    PENDING
-Designing profile/dial window                                                               PENDING
+Designing log in window                                                                     DONE
+Designing login eroor popup                                                                 PENDING
+Designing sign up window                                                                    DONE
+Designing signup eroor popup                                                                PENDING
+Designing profile/dial window                                                               DONE
+Designing edit profile popup                                                                PENDING
+Designing menu popup                                                                        PENDING
 Designing purchase window                                                                   PENDING
-Designing category selection window                                                         PENDING
-Designing chatting window                                                                   PENDING
+Designing purchase history popup                                                            PENDING
+Designing category selection popup                                                          PENDING
+Designing connection popup                                                                  PENDING
 Creating databse                                                                            PENDING
 Creating agent assigning AI                                                                 PENDING
 Connecing database with UI                                                                  PENDING
