@@ -49,7 +49,7 @@ class MainLayout(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         #write your code from here
-        self.add_widget(Edit_Profile_Widget())
+        self.add_widget(Signup_Widget())
        
 
 

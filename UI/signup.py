@@ -147,6 +147,28 @@ class Signup_Widget(FloatLayout):
             font_size='15sp',
             color=(1, 1, 1, 1),
             size_hint=(None, None))
+        
+
+
+
+        self.agent_customer_label = Label(text="Sign Up as:", 
+            pos=(60,offset-15), 
+            size=(100, 40), 
+            size_hint=(None, None), 
+            font_size='22sp', 
+            color=(41/255, 50/255, 70/255, 1),
+            font_name="assets/static/Nunito-Bold")
+        self.signup_as = "Customer"
+        self.agent_customer_selection = HoverButton((160/255, 198/255, 255/255, 0.7), (160/255, 198/255, 255/255, 0.9), 
+            text="Customer", 
+            background_color=(160/255, 198/255, 255/255, 0.9), 
+            pos=(180, offset-15), 
+            size=(150, 35),
+            font_name="assets/static/Nunito-Bold",
+            font_size='15sp',
+            color=(1, 1, 1, 1),
+            size_hint=(None, None))
+        self.agent_customer_selection.bind(on_release=self.agent_customer_selection_callback)
 
         self.add_widget(self.login_label)
         self.add_widget(self.user_name)
@@ -160,7 +182,15 @@ class Signup_Widget(FloatLayout):
         self.add_widget(self.email)
         self.add_widget(self.register_button)
         self.add_widget(self.login_button)
-
+        self.add_widget(self.agent_customer_label)
+        self.add_widget(self.agent_customer_selection)
+    
+    def agent_customer_selection_callback(self, i):
+        if self.signup_as == "Customer":
+            self.signup_as = "Agent"
+        else:
+            self.signup_as = "Customer"
+        i.text = self.signup_as
 
 
 
