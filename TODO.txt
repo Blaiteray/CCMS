@@ -7,12 +7,12 @@ Designing login eroor popup                                                     
 Designing sign up window                                                                    DONE
 Designing signup eroor popup                                                                PENDING
 Designing profile/dial window                                                               DONE
-Designing edit profile popup                                                                PENDING
+Designing edit profile popup                                                                DONE
 Designing menu popup                                                                        PENDING
-Designing offer window                                                                      PENDING
-Designing purchase window                                                                   PENDING
-Designing purchase history popup                                                            PENDING
-Designing category selection popup                                                          PENDING
+Designing offer window                                                                      DONE
+Designing purchase window                                                                   DONE
+Designing purchase history popup                                                            DONE
+Designing category selection popup                                                          DONE
 Designing connection popup                                                                  PENDING
 Creating databse                                                                            PENDING
 Creating agent assigning AI                                                                 PENDING
