@@ -18,11 +18,11 @@ from modified_widget import *
 category_list = ["Fashion", "Tech", "Software", "Programming", "Cooking", "Celebrity", "Games", "Sports", "Drawing"]
 
 
-class Category_Selection_Widget(FloatLayout):
+class Agent_Category_Selection_Widget(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         #write your code from here
-        self.main_label = Label(text="Select a Category", 
+        self.main_label = Label(text="Expertise Area (At Most Three)", 
             pos=(160, 500), 
             size=(480, 30), 
             size_hint=(None, None), 
@@ -77,6 +77,6 @@ class Category_Selection_Widget(FloatLayout):
         if i.text[:-10] in self.selected_category:
             self.selected_category.remove(i.text[:-10])
             i.text = i.text[:-10]
-        elif len(self.selected_category) < 1:
+        elif len(self.selected_category) < 3:
             self.selected_category.append(i.text)
             i.text = i.text + "[SELECTED]"
