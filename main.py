@@ -39,6 +39,7 @@ from UI.purchase_history import Purchase_History_Widget
 from UI.agent_dashboard import Agent_Dashboard_Widget
 from UI.category_selection import Category_Selection_Widget
 from UI.agent_category_selection import Agent_Category_Selection_Widget
+from UI.purchase import Purchase_Widget
 from modified_widget import *
 
 with Window.canvas.before:
@@ -52,7 +53,7 @@ class MainLayout(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         #write your code from here
-        self.add_widget(Agent_Category_Selection_Widget())
+        self.add_widget(Purchase_Widget())
        
 
 
