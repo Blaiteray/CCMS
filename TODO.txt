@@ -9,6 +9,7 @@ Designing signup eroor popup                                                    
 Designing profile/dial window                                                               DONE
 Designing edit profile popup                                                                PENDING
 Designing menu popup                                                                        PENDING
+Designing offer window                                                                      PENDING
 Designing purchase window                                                                   PENDING
 Designing purchase history popup                                                            PENDING
 Designing category selection popup                                                          PENDING
