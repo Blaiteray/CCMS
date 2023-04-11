@@ -34,6 +34,7 @@ from UI.login import Login_Widget
 from UI.signup import Signup_Widget
 from UI.profile import Profile_Widget
 from UI.offer import Offer_Widget
+from UI.purchase_history import Purchase_History_Widget
 from modified_widget import *
 
 with Window.canvas.before:
@@ -47,7 +48,7 @@ class MainLayout(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         #write your code from here
-        self.add_widget(Offer_Widget())
+        self.add_widget(Purchase_History_Widget())
        
 
 
