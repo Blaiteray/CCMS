@@ -14,6 +14,7 @@ Designing purchase window                                                       
 Designing purchase history popup                                                            DONE
 Designing category selection popup                                                          DONE
 Designing connection popup                                                                  PENDING
+Designing admin Window                                                                      PENDING
 Creating databse                                                                            PENDING
 Creating agent assigning AI                                                                 PENDING
 Connecing database with UI                                                                  PENDING
