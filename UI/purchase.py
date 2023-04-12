@@ -33,7 +33,7 @@ class Purchase_Widget(FloatLayout):
             Color(0.95, 0.96, 1, 0.95)
             Rectangle(pos=(20, 140), size=(380, 380), source="img/purchase.png")
 
-        self.purchase_store = Label(text="Purchase Store",
+        self.purchase_store = Label(text="Make Purchase",
             pos=(450, offset + 40 * 10 + 20),
             size=(180, 35),
             size_hint=(None, None),
@@ -111,7 +111,7 @@ class Purchase_Widget(FloatLayout):
             multiline=False,
             size_hint=(None, None))
 
-        self.purchase = HoverButton((41 / 255, 50 / 255, 70 / 255, 0.7), (41 / 255, 50 / 255, 70 / 255, 0.9),
+        self.purchase_button = HoverButton((41 / 255, 50 / 255, 70 / 255, 0.7), (41 / 255, 50 / 255, 70 / 255, 0.9),
             text="PURCHASE",
             background_color=(41 / 255, 50 / 255, 70 / 255, 0.9),
             pos=(440, offset + 120),
@@ -121,7 +121,7 @@ class Purchase_Widget(FloatLayout):
             color=(1, 1, 1, 1),
             size_hint=(None, None))
 
-        self.cancel = HoverButton((160 / 255, 198 / 255, 255 / 255, 0.7), (160 / 255, 198 / 255, 255 / 255, 0.9),
+        self.cancel_button = HoverButton((160 / 255, 198 / 255, 255 / 255, 0.7), (160 / 255, 198 / 255, 255 / 255, 0.9),
             text="CANCEL",
             background_color=(160 / 255, 198 / 255, 255 / 255, 0.9),
             pos=(440, offset + 80),
@@ -137,8 +137,8 @@ class Purchase_Widget(FloatLayout):
         self.add_widget(self.price)
         self.add_widget(self.postal)
         self.add_widget(self.card_no)
-        self.add_widget(self.purchase)
-        self.add_widget(self.cancel)
+        self.add_widget(self.purchase_button)
+        self.add_widget(self.cancel_button)
         self.add_widget(self.offer_id_label)
         self.add_widget(self.minute_label)
         self.add_widget(self.price_label)

@@ -79,6 +79,7 @@ class Signup_Widget(FloatLayout):
             size_hint=(None, None))
         self.password_confirm = HoverTextInput((1, 1, 1, 1), (239/255, 243/255, 255/255, 1),
             text='',
+            password = True,
             hint_text = 'Confirm Password',
             background_color=(239/255, 243/255, 255/255, 1),
             pos=(440, offset+40*6), 

@@ -77,12 +77,41 @@ class Login_Widget(FloatLayout):
             color=(1, 1, 1, 1),
             size_hint=(None, None))
         
+        self.agent_customer_label = Label(text="Log in as:", 
+            pos=(60,145), 
+            size=(100, 40), 
+            size_hint=(None, None), 
+            font_size='22sp', 
+            color=(41/255, 50/255, 70/255, 1),
+            font_name="assets/static/Nunito-Bold")
+        self.login_as = "Customer"
+        self.agent_customer_selection = HoverButton((160/255, 198/255, 255/255, 0.7), (160/255, 198/255, 255/255, 0.9), 
+            text="Customer", 
+            background_color=(160/255, 198/255, 255/255, 0.9), 
+            pos=(180, 145), 
+            size=(150, 35),
+            font_name="assets/static/Nunito-Bold",
+            font_size='15sp',
+            color=(1, 1, 1, 1),
+            size_hint=(None, None))
+        self.agent_customer_selection.bind(on_release=self.agent_customer_selection_callback)
+        
 
         self.add_widget(self.login_label)
         self.add_widget(self.user_name)
         self.add_widget(self.password)
         self.add_widget(self.login_button)
         self.add_widget(self.signup_button)
+        self.add_widget(self.agent_customer_label)
+        self.add_widget(self.agent_customer_selection)
+
+    
+    def agent_customer_selection_callback(self, i):
+        if self.login_as == "Customer":
+            self.login_as = "Agent"
+        else:
+            self.login_as = "Customer"
+        i.text = self.login_as
 
 
 

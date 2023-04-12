@@ -79,8 +79,8 @@ class Agent_Dashboard_Widget(FloatLayout):
             color=(1, 1, 1, 1),
             size_hint=(None, None))
         
-        self.menu_button = HoverButton((160/255, 198/255, 255/255, 0.7), (160/255, 198/255, 255/255, 0.9), 
-            text="MENU", 
+        self.receive_call_button = HoverButton((160/255, 198/255, 255/255, 0.7), (160/255, 198/255, 255/255, 0.9), 
+            text="RECEIVE CALL", 
             background_color=(160/255, 198/255, 255/255, 0.9), 
             pos=(30, 125), 
             size=(270, 35),
@@ -243,7 +243,7 @@ class Agent_Dashboard_Widget(FloatLayout):
         self.add_widget(self.call_duration)
         self.add_widget(self.category_label)
         self.add_widget(self.category)
-        self.add_widget(self.menu_button)
+        self.add_widget(self.receive_call_button)
         self.add_widget(self.log_out_button)
         self.add_widget(self.status_selection_label)
         self.add_widget(self.status_selection)

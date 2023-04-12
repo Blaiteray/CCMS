@@ -1,14 +1,14 @@
 TASK_DESCRIPTION                                                                            STATUS
 
 
-Creating main window                                                                        PENDING
+Creating main window                                                                        DONE
 Designing log in window                                                                     DONE
-Designing login eroor popup                                                                 PENDING
+Designing login eroor popup                                                                 DONE
 Designing sign up window                                                                    DONE
-Designing signup eroor popup                                                                PENDING
+Designing signup eroor popup                                                                DONE
 Designing profile/dial window                                                               DONE
 Designing edit profile popup                                                                DONE
-Designing menu popup                                                                        PENDING
+Designing menu popup                                                                        DONE
 Designing offer window                                                                      DONE
 Designing purchase window                                                                   DONE
 Designing purchase history popup                                                            DONE

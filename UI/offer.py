@@ -16,16 +16,16 @@ from modified_widget import *
 
 offer_list = [
     ["ix12b5", 60, 4.99, "12-01-2023"],
-    ["ix12b5", 160, 4.99, "12-01-2023"],
-    ["ix12b5", 1260, 4.99, "12-01-2023"],
-    ["ix12b5", 60, 4.99, "12-01-2023"],
-    ["ix12b5", 60, 40.99, "12-01-2023"],
-    ["ix12b5", 60, 99.99, "12-01-2023"],
-    ["ix12b5", 60, 4.99, "12-01-2023"],
-    ["ix12b5", 60, 4.99, "12-01-2023"],
-    ["ix12b5", 60, 4.99, "12-01-2023"],
-    ["ix12b5", 60, 4.99, "12-01-2023"],
-    ["ix12b4", 60, 4.99, "12-01-2023"],
+    ["ix12b1", 160, 4.99, "12-01-2023"],
+    ["ix12b2", 1260, 4.99, "12-01-2023"],
+    ["ix12b3", 60, 4.99, "12-01-2023"],
+    ["ix12b4", 60, 40.99, "12-01-2023"],
+    ["ix12b6", 60, 99.99, "12-01-2023"],
+    ["ix12b7", 60, 4.99, "12-01-2023"],
+    ["ix12b8", 60, 4.99, "12-01-2023"],
+    ["ix12b9", 60, 4.99, "12-01-2023"],
+    ["ix12b0", 60, 4.99, "12-01-2023"],
+    ["ix1211", 60, 4.99, "12-01-2023"],
 ]
 
 
@@ -91,8 +91,9 @@ class Offer_Widget(FloatLayout):
         self.offer_button_container = BoxLayout(orientation='vertical',size_hint_y=None, height=len(self.offer_list)*40)
         
 
+        self.offer_button_list = []
         for offer in self.offer_list:
-            self.offer_containing_buttion = HoverButton((41/255, 50/255, 70/255, 0.7), (41/255, 50/255, 70/255, 0.9), 
+            offer_containing_buttion = HoverButton((41/255, 50/255, 70/255, 0.7), (41/255, 50/255, 70/255, 0.9), 
                     text=offer, 
                     background_color=(41/255, 50/255, 70/255, 0.9),
                     font_name="assets/Inconsolata-Bold",
@@ -100,7 +101,8 @@ class Offer_Widget(FloatLayout):
                     size_hint_y=None,
                     border=(-20, 16, 20, 16),
                     height=40)
-            self.offer_button_container.add_widget(self.offer_containing_buttion)
+            self.offer_button_container.add_widget(offer_containing_buttion)
+            self.offer_button_list.append(offer_containing_buttion)
         self.offer_list_container.add_widget(self.offer_button_container)
 
         self.add_widget(self.main_label)
