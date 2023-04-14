@@ -100,3 +100,34 @@ class Purchase_History_Widget(FloatLayout):
         self.add_widget(self.close_button)
         self.add_widget(self.dummy_button)
         self.add_widget(self.history_list_container)
+    
+
+    def update_history(self, history_list):
+        remove_widget_recursive(self.history_list_container)
+        self.history_list = []
+        for item in history_list:
+            minutes = " "*(5-len(str(item[1])))+str(item[1])
+            price = str(item[2])+" "*(6-len(str(item[2])))
+            self.history_list.append(f"  {item[0]}             {minutes} Minutes        $ {price}       {item[3]}  ")
+        
+        self.history_list_container = ScrollView(
+            pos=(80, 115), 
+            size=(640, 280), 
+            size_hint=(None, None),
+            scroll_wheel_distance = 100)
+        self.offer_button_container = BoxLayout(orientation='vertical',size_hint_y=None, height=len(self.history_list)*40)
+        
+
+        for offer in self.history_list:
+            self.offer_containing_buttion = HoverButton((41/255, 50/255, 70/255, 0.7), (41/255, 50/255, 70/255, 0.9), 
+                    text=offer, 
+                    background_color=(41/255, 50/255, 70/255, 0.9),
+                    font_name="assets/Inconsolata-Bold",
+                    font_size='16sp',
+                    size_hint_y=None,
+                    border=(-20, 16, 20, 16),
+                    height=40)
+            self.offer_button_container.add_widget(self.offer_containing_buttion)
+        self.history_list_container.add_widget(self.offer_button_container)
+
+        self.add_widget(self.history_list_container)

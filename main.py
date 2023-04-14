@@ -335,7 +335,11 @@ class MainLayout(FloatLayout):
         if self.purchase.postal.text == '' or self.purchase.card_no.text == '':
             msg = "Fill up the informations!"
         else:
-            purhcase_no = str(len(list(database.execute("SELECT * FROM Payment"))))
+            purhcase_no = list(database.execute("SELECT payment_id FROM Payment"))
+            if len(purhcase_no) == 0:
+                purhcase_no = '0'
+            else:
+                purhcase_no = str(int(purhcase_no[-1][0])+1)
             purhcase_no = "0"*(6-len(purhcase_no))+purhcase_no
             date = datetime.now().strftime("%d-%m-%Y")
             database.execute("INSERT INTO Payment VALUES (?, ?, ?, ?)", (purhcase_no, date, self.logged_in_user_name, self.selected_offer_id))
@@ -378,6 +382,8 @@ class MainLayout(FloatLayout):
             title='')
         def ok_button_callback(i):
             if msg == "Purchase Successful!":
+                self.purchase.postal.text = ''
+                self.purchase.card_no.text = ''
                 self.main_screen_manager.switch_to(self.profile_screen, direction='right')
             popup.dismiss()
         go_login_button.bind(on_press=ok_button_callback)
@@ -521,6 +527,8 @@ class MainLayout(FloatLayout):
     
 
     def offer_history_button_callback(self, i):
+        history_list = list(database.execute("SELECT o.* FROM Payment p LEFT JOIN Offer o ON p.offer_id=o.offer_id WHERE p.user_name=?", (self.logged_in_user_name,)))
+        self.purchase_history.update_history(history_list)
         self.main_screen_manager.switch_to(self.purchase_history_screen, direction='left')
 
     
