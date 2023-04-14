@@ -1,10 +1,73 @@
 """
-A note keeping tool
+Call center management system
 """
+
+import sqlite3
+
+database = sqlite3.connect("ccms_database.db")
+database.execute("""CREATE TABLE IF NOT EXISTS Client(
+                 user_name TEXT PRIMARY KEY,
+                 first_name TEXT,
+                 last_name TEXT,
+                 password TEXT,
+                 gender TEXT,
+                 date_of_birth TEXT,
+                 mobile TEXT,
+                 email TEXT,
+                 minute_remaining REAL)""")
+
+database.execute("""CREATE TABLE IF NOT EXISTS Agent(
+                 user_name TEXT PRIMARY KEY,
+                 first_name TEXT,
+                 last_name TEXT,
+                 password TEXT,
+                 gender TEXT,
+                 date_of_birth TEXT,
+                 mobile TEXT,
+                 email TEXT,
+                 call_reveived INTEGER,
+                 call_duration REAL,
+                 status TEXT)""")
+
+database.execute("""CREATE TABLE IF NOT EXISTS Category(
+                 user_name TEXT,
+                 category TEXT,
+                 PRIMARY KEY (user_name, category),
+                 FOREIGN KEY(user_name) REFERENCES Agent(user_name) ON UPDATE CASCADE ON DELETE CASCADE)""")
+
+database.execute("""CREATE TABLE IF NOT EXISTS Offer(
+                 offer_id TEXT PRIMARY KEY,
+                 minute INTEGER,
+                 price REAL,
+                 last_date TEXT)""")
+
+database.execute("""CREATE TABLE IF NOT EXISTS Payment(
+                 payment_id TEXT PRIMARY KEY,
+                 date TEXT,
+                 user_name TEXT,
+                 offer_id,
+                 FOREIGN KEY(user_name) REFERENCES Client(user_name) ON UPDATE CASCADE ON DELETE CASCADE,
+                 FOREIGN KEY(offer_id) REFERENCES Offer(offer_id) ON UPDATE CASCADE ON DELETE CASCADE)""")
+
+database.execute("""CREATE TABLE IF NOT EXISTS Make_Call(
+                 dial_token TEXT PRIMARY KEY,
+                 status TEXT,
+                 selected_category TEXT,
+                 start_time TEXT,\
+                 connection_start_time TEXT,
+                 user_name TEXT,
+                 end_time TEXT,
+                 agent_id TEXT,
+                 FOREIGN KEY(user_name) REFERENCES Client(user_name) ON UPDATE CASCADE ON DELETE CASCADE,
+                 FOREIGN KEY(agent_id) REFERENCES Agent(user_name) ON UPDATE CASCADE ON DELETE CASCADE)""")
+
+database.commit()
+
 
 import os
 os.environ['KIVY_IMAGE'] = 'pil'
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"
+from datetime import datetime
 
 import kivy
 kivy.require('2.1.0')
@@ -69,7 +132,12 @@ class MainLayout(FloatLayout):
         self.profile.menu_button.bind(on_release=self.customer_menu_button_callback_popup)
 
 
-        self.offer = Offer_Widget()
+        offer_list = list(database.execute("SELECT * FROM Offer"))
+        selected_offer_list = []
+        for offer in offer_list:
+            if self.compare_date(datetime.now().strftime("%d-%m-%Y"), offer[3]):
+                selected_offer_list.append(offer)
+        self.offer = Offer_Widget(selected_offer_list)
         self.offer.cancel_button.bind(on_release=self.offer_cancel_button_callback)
         self.offer.history_button.bind(on_release=self.offer_history_button_callback)
         for offer_button in self.offer.offer_button_list:
@@ -266,6 +334,18 @@ class MainLayout(FloatLayout):
         msg = "Purchase Successful!"
         if self.purchase.postal.text == '' or self.purchase.card_no.text == '':
             msg = "Fill up the informations!"
+        else:
+            purhcase_no = str(len(list(database.execute("SELECT * FROM Payment"))))
+            purhcase_no = "0"*(6-len(purhcase_no))+purhcase_no
+            date = datetime.now().strftime("%d-%m-%Y")
+            database.execute("INSERT INTO Payment VALUES (?, ?, ?, ?)", (purhcase_no, date, self.logged_in_user_name, self.selected_offer_id))
+            remaining_minures = self.logged_in_info[0][-1]
+            self.logged_in_info[0] = list(self.logged_in_info[0][:-1])
+            self.logged_in_info[0].append(remaining_minures + self.selected_offer_minutes)
+            database.execute("UPDATE Client SET minute_remaining=? WHERE user_name=?", (self.logged_in_info[0][-1], self.logged_in_user_name))
+            database.commit()
+
+            self.profile.update_minute_remaining(self.logged_in_info[0][-1])
         content = FloatLayout()
 
         msg_label = Label(text=msg, 
@@ -309,19 +389,45 @@ class MainLayout(FloatLayout):
 
     
     def login_login_button_callback(self, i):
-        if self.login.user_name.text == '' or self.login.password.text == '':
-            self.error_popup("User Name or Password don't \nMatch!")
-        elif self.login.login_as == "Customer":
-            self.main_screen_manager.switch_to(self.profile_screen, direction='left')
+        self.logged_in_user_name = self.login.user_name.text
+        password = self.login.password.text
+        self.logged_in_info = None
+        if self.login.login_as == "Customer":
+            self.logged_in_info = list(database.execute("SELECT * FROM Client WHERE user_name = ? AND password = ?", (self.logged_in_user_name, password)))
+            if len(self.logged_in_info) == 0:
+                self.error_popup("User Name or Password don't \nMatch!")
+            else:
+                self.profile.update_info(*self.logged_in_info[0][:3], *self.logged_in_info[0][4:])
+                self.main_screen_manager.switch_to(self.profile_screen, direction='left')
         elif self.login.login_as == "Agent":
-            self.main_screen_manager.switch_to(self.agent_dashboard_screen, direction='left')
+            self.logged_in_info = list(database.execute("SELECT * FROM Agent WHERE user_name = ? AND password = ?", (self.logged_in_user_name, password)))
+            if len(self.logged_in_info) == 0:
+                self.error_popup("User Name or Password don't \nMatch!")
+            else:
+                categories = list(database.execute("SELECT category FROM Category WHERE user_name=?", (self.logged_in_user_name,)))
+                m_categories = []
+                for category in categories:
+                    m_categories.append(category[0])
+                self.agent_dashboard.update_info(*self.logged_in_info[0][:3], *self.logged_in_info[0][4:-1], m_categories)
+                self.main_screen_manager.switch_to(self.agent_dashboard_screen, direction='left')
 
 
     def regester_button_callback(self, i):
+        user_name = self.signup.user_name.text
+        password = self.signup.password.text
+        first_name = self.signup.first_name.text
+        last_name = self.signup.last_name.text
+        gender = self.signup.gender.text
+        date_of_birth = self.signup.date_of_birth.text
+        mobile = self.signup.mobile.text
+        email = self.signup.email.text
+
         dob = self.signup.date_of_birth.text.split('-')
-        if self.signup.user_name.text == '':
+        check_username = list(database.execute("SELECT * FROM Client WHERE user_name=?", (user_name,)))
+
+        if len(check_username) > 0:
             self.error_popup("User Name Already Exists!")
-        elif len(self.signup.password.text) < 8:
+        elif len(self.signup.password.text) < 4:
             self.error_popup("Password Too Short!")
         elif self.signup.password.text != self.signup.password_confirm.text:
             self.error_popup("Password Don't Match!")
@@ -332,8 +438,12 @@ class MainLayout(FloatLayout):
         elif self.signup.first_name.text == '' or self.signup.last_name.text == '' or self.signup.mobile == '' or self.signup.email == '':
             self.error_popup("Missing required information!")
         elif self.signup.signup_as == "Customer":
+            database.execute("INSERT INTO Client VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)", (user_name, first_name, last_name, password, gender, date_of_birth, mobile, email, 100))
+            database.commit()
             self.signup_regester_completion_popup()
         elif self.signup.signup_as == "Agent":
+            database.execute("INSERT INTO Agent VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (user_name, first_name, last_name, password, gender, date_of_birth, mobile, email, 0, 0, "Inactive"))
+            database.commit()
             self.main_screen_manager.switch_to(self.agent_category_selection_screen, direction='left')
         
 
@@ -342,6 +452,10 @@ class MainLayout(FloatLayout):
     
 
     def edit_button_callback(self, i):
+        if self.login.login_as == "Customer":
+            self.edit_profile.update_info(*self.logged_in_info[0][:-1])
+        elif self.login.login_as == "Agent":
+            self.edit_profile.update_info(*self.logged_in_info[0][:-3])
         self.main_screen_manager.switch_to(self.edit_profile_screen, direction='left')
     
 
@@ -357,10 +471,47 @@ class MainLayout(FloatLayout):
     
 
     def edit_done_button_callback(self, i):
-        if self.login.login_as == "Customer":
+        user_name = self.edit_profile.user_name.text
+        password = self.edit_profile.password.text
+        first_name = self.edit_profile.first_name.text
+        last_name = self.edit_profile.last_name.text
+        gender = self.edit_profile.gender.text
+        date_of_birth = self.edit_profile.date_of_birth.text
+        mobile = self.edit_profile.mobile.text
+        email = self.edit_profile.email.text
+
+        dob = self.edit_profile.date_of_birth.text.split('-')
+
+        if len(self.edit_profile.password.text) < 4:
+            self.error_popup("Password Too Short!")
+        elif self.edit_profile.password.text != self.edit_profile.password_confirm.text:
+            self.error_popup("Password Don't Match!")
+        elif not self.edit_profile.gender.text in ['Male', 'Female']:
+            self.error_popup("Gender either Male or Female")
+        elif len(dob) != 3 or not (len(dob[0])+2==len(dob[1])+2==len(dob[2])==4) or not (dob[0].isdigit() and dob[1].isdigit() and dob[2].isdigit()):
+            self.error_popup("Date format should be \ndd-mm-yyyy")
+        elif self.edit_profile.first_name.text == '' or self.edit_profile.last_name.text == '' or self.edit_profile.mobile == '' or self.edit_profile.email == '':
+            self.error_popup("Missing required information!")
+        elif self.login.login_as == "Customer":
+            database.execute("UPDATE Client SET first_name=?, last_name=?, password=?, gender=?, date_of_birth=?, mobile=?, email=? WHERE user_name=?", (first_name, last_name, password, gender, date_of_birth, mobile, email, user_name))
+            database.commit()
+            self.logged_in_info[0] = [user_name, first_name, last_name, password, gender, date_of_birth, mobile, email, self.logged_in_info[0][-1]]
+            self.profile.update_info(*self.logged_in_info[0][:3], *self.logged_in_info[0][4:])
             self.main_screen_manager.switch_to(self.profile_screen, direction='right')
-        elif  self.login.login_as == "Agent":
+        elif self.login.login_as == "Agent":
+            database.execute("UPDATE Agent SET first_name=?, last_name=?, password=?, gender=?, date_of_birth=?, mobile=?, email=? WHERE user_name=?", (first_name, last_name, password, gender, date_of_birth, mobile, email, user_name))
+            database.commit()
+            self.logged_in_info[0] = [user_name, first_name, last_name, password, gender, date_of_birth, mobile, email, self.logged_in_info[0][-3], self.logged_in_info[0][-2], self.logged_in_info[0][-1]]
+            categories = list(database.execute("SELECT category FROM Category WHERE user_name=?", (self.logged_in_user_name,)))
+            m_categories = []
+            for category in categories:
+                m_categories.append(category[0])
+            self.agent_dashboard.update_info(*self.logged_in_info[0][:3], *self.logged_in_info[0][4:-1], m_categories)
             self.main_screen_manager.switch_to(self.agent_dashboard_screen, direction='right')
+
+
+
+
     
     def offer_cancel_button_callback(self, i):
         if self.login.login_as == "Customer":
@@ -374,10 +525,9 @@ class MainLayout(FloatLayout):
 
     
     def offer_selected_callback(self, i):
-        offer_id = i.text[:16].strip()
-        minutes = int(i.text[18:26].strip())
+        self.selected_offer_id = i.text[:16].strip()
+        self.selected_offer_minutes = int(i.text[18:26].strip())
         price = float(i.text[44:54].strip())
-        print(offer_id, minutes, price)
         self.main_screen_manager.switch_to(self.purchase_screen, direction='left')
 
     
@@ -391,9 +541,23 @@ class MainLayout(FloatLayout):
 
     def agent_category_selection_callback(self, i):
         if len(self.agent_category_selection.selected_category) > 0:
+            user_name = self.signup.user_name.text
+            for category in self.agent_category_selection.selected_category:
+                database.execute("INSERT INTO Category VALUES(?, ?)", (user_name, category))
+            database.commit()
             self.main_screen_manager.switch_to(self.agent_dashboard_screen, direction='left')
         else:
             self.error_popup("Select at least one option!")
+
+    
+    def compare_date(self, date1, date2):
+        date1 = date1.split("-")
+        date2 = date2.split("-")
+        date1.reverse()
+        date2.reverse()
+        date1 = "".join(date1)
+        date2 = "".join(date2)
+        return date1 <= date2
 
        
 
@@ -406,3 +570,6 @@ class Main_Window(App):
         return MainLayout()
 
 Main_Window().run()
+
+
+database.close()

@@ -14,23 +14,23 @@ from kivy.uix.textinput import TextInput
 # from kivy.uix.screenmanager import Screen, ScreenManager
 from modified_widget import *
 
-offer_list = [
-    ["ix12b5", 60, 4.99, "12-01-2023"],
-    ["ix12b1", 160, 4.99, "12-01-2023"],
-    ["ix12b2", 1260, 4.99, "12-01-2023"],
-    ["ix12b3", 60, 4.99, "12-01-2023"],
-    ["ix12b4", 60, 40.99, "12-01-2023"],
-    ["ix12b6", 60, 99.99, "12-01-2023"],
-    ["ix12b7", 60, 4.99, "12-01-2023"],
-    ["ix12b8", 60, 4.99, "12-01-2023"],
-    ["ix12b9", 60, 4.99, "12-01-2023"],
-    ["ix12b0", 60, 4.99, "12-01-2023"],
-    ["ix1211", 60, 4.99, "12-01-2023"],
-]
+# offer_list = [
+#     ["ix12b5", 60, 4.99, "12-01-2023"],
+#     ["ix12b1", 160, 4.99, "12-01-2023"],
+#     ["ix12b2", 1260, 4.99, "12-01-2023"],
+#     ["ix12b3", 60, 4.99, "12-01-2024"],
+#     ["ix12b4", 60, 40.99, "12-01-2024"],
+#     ["ix12b6", 60, 99.99, "12-01-2024"],
+#     ["ix12b7", 60, 4.99, "12-01-2024"],
+#     ["ix12b8", 60, 4.99, "12-01-2024"],
+#     ["ix12b9", 60, 4.99, "12-01-2024"],
+#     ["ix12b0", 60, 4.99, "12-01-2024"],
+#     ["ix1211", 60, 4.99, "12-01-2024"],
+# ]
 
 
 class Offer_Widget(FloatLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, offer_list, **kwargs):
         super().__init__(**kwargs)
         #write your code from here
         self.main_label = Label(text="PURCHASE BUNDLES", 

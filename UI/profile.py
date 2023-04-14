@@ -189,6 +189,24 @@ class Profile_Widget(FloatLayout):
         self.add_widget(self.minute_remaining)
         self.add_widget(self.menu_button)
         self.add_widget(self.log_out_button)
+    
+
+    def update_info(self, user_name, first_name, last_name, gender, date_of_birth, mobile, email, minute_remaining):
+        self.username_string = user_name + " "*(11-len(user_name))
+        self.fullname_string = first_name+" "+last_name
+        self.fullname_string = self.fullname_string + " "*(20-len(self.fullname_string))
+
+        self.username.text = self.username_string
+        self.fullname.text = self.fullname_string
+        self.gender.text = gender+" "*(32-len(gender))
+        self.date_of_birth.text = date_of_birth+" "*(32-len(date_of_birth))
+        self.mobile.text = mobile+" "*(32-len(mobile))
+        self.email.text = email+" "*(32-len(email))
+        self.minute_remaining.text=str(minute_remaining)+" Minute" +" "*(25-len(str(minute_remaining)))
+    
+    def update_minute_remaining(self, minute_remaining):
+        self.minute_remaining.text=str(minute_remaining)+" Minute" +" "*(25-len(str(minute_remaining)))
+
         
         
 

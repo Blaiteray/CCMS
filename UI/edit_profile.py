@@ -47,6 +47,7 @@ class Edit_Profile_Widget(FloatLayout):
 
         self.user_name = HoverTextInput((1, 1, 1, 1), (239/255, 243/255, 255/255, 1),
             text=user_profile['username'],
+            readonly=True,
             hint_text = 'User Name',
             background_color=(239/255, 243/255, 255/255, 1),
             pos=(440+xmove, offset+40*10), 
@@ -88,6 +89,7 @@ class Edit_Profile_Widget(FloatLayout):
             size_hint=(None, None))
         self.password_confirm = HoverTextInput((1, 1, 1, 1), (239/255, 243/255, 255/255, 1),
             text='',
+            password=True,
             hint_text = 'Confirm Password',
             background_color=(239/255, 243/255, 255/255, 1),
             pos=(440+xmove, offset+40*6), 
@@ -169,3 +171,15 @@ class Edit_Profile_Widget(FloatLayout):
         self.add_widget(self.email)
         self.add_widget(self.done_button)
         self.add_widget(self.cancel_button)
+    
+
+    def update_info(self, user_name, first_name, last_name, password, gender, date_of_birth, mobile, email):
+        self.user_name.text = user_name
+        self.password.text = password
+        self.password_confirm.text = password
+        self.first_name.text = first_name
+        self.last_name.text = last_name
+        self.gender.text = gender
+        self.date_of_birth.text =date_of_birth
+        self.mobile.text = mobile
+        self.email.text = email

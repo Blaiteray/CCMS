@@ -255,6 +255,29 @@ class Agent_Dashboard_Widget(FloatLayout):
         else:
             self.status = "Inactive"
         i.text = self.status
+    
+    def update_info(self, user_name, first_name, last_name, gender, date_of_birth, mobile, email, call_received, call_duration, categories):
+        self.username_string = user_name + " "*(11-len(user_name))
+        self.fullname_string = first_name+" "+last_name
+        self.fullname_string = self.fullname_string + " "*(20-len(self.fullname_string))
+
+        self.username.text = self.username_string
+        self.fullname.text = self.fullname_string
+        self.gender.text = gender+" "*(32-len(gender))
+        self.date_of_birth.text = date_of_birth+" "*(32-len(date_of_birth))
+        self.mobile.text = mobile+" "*(32-len(mobile))
+        self.email.text = email+" "*(32-len(email))
+        self.call_reveived.text = str(call_received)+" "*(32-len(str(call_received)))
+        self.call_duration.text = str(call_duration)+" Minute" +" "*(25-len(str(call_duration)))
+
+        temp_str = ", ".join(categories)
+        self.category.text=temp_str+" "*(32-len(temp_str))
+    
+    def update_call_reveived(self, call_received):
+        self.call_reveived.text = str(call_received)+" "*(32-len(str(call_received)))
+    
+    def update_call_duration(self, call_duration):
+        self.call_duration.text = str(call_duration)+" Minute" +" "*(25-len(str(call_duration)))
         
         
 
