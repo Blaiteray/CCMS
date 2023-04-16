@@ -220,7 +220,6 @@ class Agent_Dashboard_Widget(FloatLayout):
             font_size='15sp',
             color=(1, 1, 1, 1),
             size_hint=(None, None))
-        self.status_selection.bind(on_release=self.status_selection_callback)
         
 
         
@@ -249,12 +248,7 @@ class Agent_Dashboard_Widget(FloatLayout):
         self.add_widget(self.status_selection)
 
     
-    def status_selection_callback(self, i):
-        if self.status == "Inactive":
-            self.status = "Active"
-        else:
-            self.status = "Inactive"
-        i.text = self.status
+    
     
     def update_info(self, user_name, first_name, last_name, gender, date_of_birth, mobile, email, call_received, call_duration, categories):
         self.username_string = user_name + " "*(11-len(user_name))

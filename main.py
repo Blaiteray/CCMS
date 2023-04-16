@@ -68,6 +68,8 @@ import os
 os.environ['KIVY_IMAGE'] = 'pil'
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"
 from datetime import datetime
+import threading
+from time import sleep
 
 import kivy
 kivy.require('2.1.0')
@@ -158,9 +160,12 @@ class MainLayout(FloatLayout):
         self.agent_dashboard = Agent_Dashboard_Widget()
         self.agent_dashboard.edit_button.bind(on_release=self.edit_button_callback)
         self.agent_dashboard.log_out_button.bind(on_release=self.logout_button_callback)
+        self.agent_dashboard.status_selection.bind(on_release=self.agent_status_selection_callback)
         # self.agent_dashboard.receive_call_button.bind(on_release)
 
         self.category_selection = Category_Selection_Widget()
+        self.category_selection.select_button.bind(on_release = self.call_window_callback_popup)
+
         self.agent_category_selection = Agent_Category_Selection_Widget()
         self.agent_category_selection.select_button.bind(on_release=self.agent_category_selection_callback)
 
@@ -179,6 +184,8 @@ class MainLayout(FloatLayout):
         self.admin.current_delete_button.bind(on_release=self.delete_entry_callback)
         self.admin.add_offer_button.bind(on_release=self.add_offer_callback_popup)
 
+
+        self.current_dial_token = None
 
         self.login_screen = Screen(name='login')
         self.login_screen.add_widget(self.login)
@@ -344,8 +351,12 @@ class MainLayout(FloatLayout):
         def purchase_button_callback(i):
             self.main_screen_manager.switch_to(self.offer_screen, direction='left')
             popup.dismiss()
+        def call_button_callback(i):
+            self.main_screen_manager.switch_to(self.category_selection_screen, direction='left')
+            popup.dismiss()
         call_button.bind(on_press=call_button_popup)
         purchase_button.bind(on_press=purchase_button_callback)
+        call_button.bind(on_press=call_button_callback)
         popup.open()
     
 
@@ -456,6 +467,7 @@ class MainLayout(FloatLayout):
             title_font="assets/static/Nunito-Bold",
             title_size='16sp',
             title='')
+        
 
         def confirm_add(i):
             dob = last_date.text.split('-')
@@ -480,6 +492,194 @@ class MainLayout(FloatLayout):
         popup.open()
 
 
+    def call_window_callback_popup(self, i):
+        if len(self.category_selection.selected_category) == 0:
+            self.error_popup("Please select a category!")
+            return
+
+
+        self.dial_token = datetime.now().strftime("%Y%m%d%H%M%S%f")
+        start_time = datetime.now()
+
+        database.execute("INSERT INTO Make_Call(dial_token, status, selected_category, start_time, user_name) VALUES(?, ?, ?,?,?)",(self.dial_token, "Waiting", self.category_selection.selected_category[0], start_time, self.logged_in_user_name))
+        database.commit()
+        content = FloatLayout()
+
+        status = "Waiting"
+        available_agent = list(database.execute("SELECT DISTINCT a.user_name FROM Agent a LEFT JOIN Category c ON a.user_name=c.user_name WHERE c.category = ?", (self.category_selection.selected_category[0],)))
+        agent = "None"
+        status_label = Label(text=f"Status Label: {status}", 
+            pos=(250,340), 
+            size=(300, 40), 
+            size_hint=(None, None), 
+            font_size='18sp', 
+            color=(1, 1, 1, 1),
+            font_name="assets/static/Nunito-Bold")
+        show_available_agent = Label(text=f"Available Agent Number: {len(available_agent)}", 
+            pos=(250,300), 
+            size=(300, 40), 
+            size_hint=(None, None), 
+            font_size='18sp', 
+            color=(1, 1, 1, 1),
+            font_name="assets/static/Nunito-Bold")
+        connected_agent = Label(text=f"Connected Agent: {agent}", 
+            pos=(250,260), 
+            size=(300, 40), 
+            size_hint=(None, None), 
+            font_size='18sp', 
+            color=(1, 1, 1, 1),
+            font_name="assets/static/Nunito-Bold")
+        
+        call_drop_button = HoverButton((82/255, 100/255, 140/255, 0.7), (82/255, 100/255, 140/255, 0.9),
+            text="Calling ...", 
+            background_color=(82/255, 100/255, 140/255, 0.9),
+            pos=(270,215), 
+            size=(260, 34),
+            font_name="assets/static/Nunito-Bold",
+            font_size='16sp',
+            color=(1, 1, 1, 1),
+            size_hint=(None, None))
+        content.add_widget(call_drop_button)
+        content.add_widget(status_label)
+        content.add_widget(show_available_agent)
+        content.add_widget(connected_agent)
+
+        
+
+
+        popup = MemoryPopup(content=content, 
+            auto_dismiss=False, 
+            size_hint=(.4, .4),
+            separator_height=0,
+            separator_color=(0.9, 1, 1, 1),
+            background_color=(41/255, 50/255, 70/255, 0.9),
+            title_font="assets/static/Nunito-Bold",
+            title_size='16sp',
+            title='')
+        self.call_dropped = False
+        def call_drop_button_callback(i):
+            self.call_dropped = True
+            popup.dismiss()
+            self.main_screen_manager.switch_to(self.profile_screen, direction='right')
+        call_drop_button.bind(on_press=call_drop_button_callback)
+        popup.open()
+    
+        def check_agent_status_thread(self, call_drop_button, connected_agent):
+            database_t = sqlite3.connect("ccms_database.db")
+            for t in range(20):
+                if self.call_dropped:
+                    print("Call Ended")
+                    return
+                result = list(database_t.execute("SELECT status, agent_id FROM Make_Call WHERE dial_token=?", (self.dial_token, )))
+                if result[0][0] == "In_Call":
+                    print("found")
+                    break
+                sleep(1)
+            
+            if result[0][0] == "In_Call":
+                connected_agent.text =  f"Connected Agent: {result[0][1]}"
+                call_drop_button.text = "Close"
+            else:
+                database_t.execute("UPDATE Make_Call SET status='Done' WHERE dial_token=?", (self.dial_token, ))
+                call_drop_button.text = "No Response"
+                call_drop_button.background_color = (246/255, 100/255, 140/255, 0.9)
+            database_t.close()
+            
+
+        client_side_call_thread = threading.Thread(target=check_agent_status_thread, args=(self, call_drop_button, connected_agent))
+        client_side_call_thread.start()
+
+
+
+    def agent_status_selection_callback(self, i):
+        if self.agent_dashboard.status == "Inactive":
+            self.agent_dashboard.status = "Active"
+            database.execute("UPDATE Agent SET status='Active' WHERE user_name=?", (self.logged_in_user_name,))
+
+
+            content = FloatLayout()
+            
+            calling_agent_name = Label(text=f"Calling Client: None", 
+                pos=(250,300), 
+                size=(300, 40), 
+                size_hint=(None, None), 
+                font_size='18sp', 
+                color=(1, 1, 1, 1),
+                font_name="assets/static/Nunito-Bold")
+            
+            agent_command_button = HoverButton((82/255, 100/255, 140/255, 0.7), (82/255, 100/255, 140/255, 0.9),
+                text="Go Offline", 
+                background_color=(82/255, 100/255, 140/255, 0.9),
+                pos=(270,215), 
+                size=(260, 34),
+                font_name="assets/static/Nunito-Bold",
+                font_size='16sp',
+                color=(1, 1, 1, 1),
+                size_hint=(None, None))
+            content.add_widget(agent_command_button)
+            content.add_widget(calling_agent_name)
+
+
+            popup = MemoryPopup(content=content, 
+                auto_dismiss=False, 
+                size_hint=(.4, .4),
+                separator_height=0,
+                separator_color=(0.9, 1, 1, 1),
+                background_color=(41/255, 50/255, 70/255, 0.9),
+                title_font="assets/static/Nunito-Bold",
+                title_size='16sp',
+                title='')
+            def agent_command_button_callback(i):
+                if agent_command_button.text == "Go Offline":
+                    self.agent_dashboard.status = "Inactive"
+                    database.execute("UPDATE Agent SET status='Inactive' WHERE user_name=?", (self.logged_in_user_name,))
+                    database.commit()
+                    popup.dismiss()
+                
+                if agent_command_button.text == "Receive":
+                    agent_command_button.text = "Drop Call"
+                    self.connection_start_time = datetime.now()
+                    database.execute("UPDATE Make_Call SET agent_id=?, connection_start_time=?, status='In_Call' WHERE dial_token=?", (self.logged_in_user_name, str(self.connection_start_time), self.current_dial_token))
+                    database.commit()
+                
+                if agent_command_button.text == "Drop Call":
+                    agent_command_button.text = "Go Offline"
+                    calling_agent_name.text = f"Calling Client: None"
+                    client_agent = list(database.execute("SELECT user_name, agent_id FROM Make_Call WHERE dial_token=?", (self.current_dial_token,)))
+                    print(self.current_dial_token)
+                    self.connection_end_time = datetime.now()
+                    database.execute("UPDATE Make_Call SET status='Done', end_time=? WHERE dial_token=?", (str(self.connection_end_time), self.current_dial_token))
+                    database.execute("UPDATE Client SET minute_remaining=minute_remaining-? WHERE user_name=?", ((self.connection_end_time-self.connection_start_time).total_seconds()/60, client_agent[0][0]))
+                    database.execute("UPDATE Agent SET call_duration=call_duration+?, call_reveived=call_reveived+1 WHERE user_name=?", ((self.connection_end_time-self.connection_start_time).total_seconds()/60, client_agent[0][0]))
+                    database.commit()
+
+            agent_command_button.bind(on_press=agent_command_button_callback)
+            popup.open()
+
+            
+            def agent_calling_thread(self, agent_command_button, calling_agent_name):
+                while self.agent_dashboard.status != "Inactive":
+                    database_t = sqlite3.connect("ccms_database.db")
+                    available_call = list(database_t.execute("SELECT dial_token, user_name FROM Make_Call WHERE selected_category IN (SELECT category FROM Category WHERE user_name=?) AND status='Waiting' ORDER BY start_time", (self.logged_in_user_name, )))
+                    if self.agent_dashboard.status == "Busy":
+                        available_call = list(database_t.execute("SELECT dial_token, user_name FROM Make_Call WHERE agent_id=?", (self.logged_in_user_name, )))
+                    if len(available_call) > 0:
+                        self.current_dial_token = available_call[0][0]
+                        calling_agent_name.text = f"Calling Client: {available_call[0][1]}"
+                        if agent_command_button.text == "Go Offline":
+                            agent_command_button.text = "Receive"
+                    database_t.close()
+                    sleep(1)
+            
+            agent_call_thread = threading.Thread(target=agent_calling_thread, args=(self, agent_command_button, calling_agent_name))
+            agent_call_thread.start()
+
+            
+        else:
+            self.agent_dashboard.status = "Inactive"
+        i.text = self.agent_dashboard.status
+
+    
     def signup_button_callback(self, i):
         self.main_screen_manager.switch_to(self.signup_screen, direction='left')
 
@@ -646,7 +846,8 @@ class MainLayout(FloatLayout):
             for category in self.agent_category_selection.selected_category:
                 database.execute("INSERT INTO Category VALUES(?, ?)", (user_name, category))
             database.commit()
-            self.main_screen_manager.switch_to(self.agent_dashboard_screen, direction='left')
+            self.error_popup("Sign Up Successful!")
+            self.main_screen_manager.switch_to(self.login_screen, direction='right')
         else:
             self.error_popup("Select at least one option!")
     
