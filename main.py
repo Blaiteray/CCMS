@@ -53,7 +53,7 @@ database.execute("""CREATE TABLE IF NOT EXISTS Make_Call(
                  dial_token TEXT PRIMARY KEY,
                  status TEXT,
                  selected_category TEXT,
-                 start_time TEXT,\
+                 start_time TEXT,
                  connection_start_time TEXT,
                  user_name TEXT,
                  end_time TEXT,
@@ -103,6 +103,7 @@ from UI.agent_dashboard import Agent_Dashboard_Widget
 from UI.category_selection import Category_Selection_Widget
 from UI.agent_category_selection import Agent_Category_Selection_Widget
 from UI.purchase import Purchase_Widget
+from UI.admin import Admin_Widget
 from modified_widget import *
 
 with Window.canvas.before:
@@ -163,6 +164,22 @@ class MainLayout(FloatLayout):
         self.agent_category_selection = Agent_Category_Selection_Widget()
         self.agent_category_selection.select_button.bind(on_release=self.agent_category_selection_callback)
 
+
+        client_list = list(database.execute("SELECT * FROM Client"))
+        agent_list = list(database.execute("SELECT * FROM Agent"))
+        client_info = []
+        agent_info = []
+        for info in client_list:
+            client_info.append(list(info[:3])+list(info[4:]))
+        for info in agent_list:
+            agent_info.append(list(info[:3])+list(info[4:-1]))
+
+        self.admin = Admin_Widget(client_info, agent_info)
+        self.admin.log_out_button.bind(on_release=self.admin_logout_callback)
+        self.admin.current_delete_button.bind(on_release=self.delete_entry_callback)
+        self.admin.add_offer_button.bind(on_release=self.add_offer_callback_popup)
+
+
         self.login_screen = Screen(name='login')
         self.login_screen.add_widget(self.login)
 
@@ -193,6 +210,8 @@ class MainLayout(FloatLayout):
         self.agent_category_selection_screen = Screen(name='agent_category_selection')
         self.agent_category_selection_screen.add_widget(self.agent_category_selection)
 
+        self.admin_screen = Screen(name='admin')
+        self.admin_screen.add_widget(self.admin)
 
 
 
@@ -390,6 +409,77 @@ class MainLayout(FloatLayout):
         popup.open()
 
 
+    def add_offer_callback_popup(self, i):
+        content = FloatLayout()
+        offer_id = TextInput(hint_text="6 Character Offer ID",
+            pos=(253, 250+110), 
+            size=(295, 30), 
+            font_name="assets/static/Nunito-Regular",
+            size_hint=(None, None))
+        minute = TextInput(hint_text="Minute Integer",
+            pos=(253, 250+70), 
+            size=(295, 30), 
+            font_name="assets/static/Nunito-Regular",
+            size_hint=(None, None))
+        price = TextInput(hint_text="Price Float",
+            pos=(253, 250+30), 
+            size=(295, 30), 
+            font_name="assets/static/Nunito-Regular",
+            size_hint=(None, None))
+        last_date = TextInput(hint_text="Last_date dd-mm-yyyy",
+            pos=(253, 250-10), 
+            size=(295, 30), 
+            font_name="assets/static/Nunito-Regular",
+            size_hint=(None, None))
+        
+        confirmation_button = HoverButton((82/255, 100/255, 140/255, 0.7), (82/255, 100/255, 140/255, 0.9),
+            text="ADD", 
+            background_color=(82/255, 100/255, 140/255, 0.9),
+            pos=(270,185), 
+            size=(260, 34),
+            font_name="assets/static/Nunito-Bold",
+            font_size='16sp',
+            color=(1, 1, 1, 1),
+            size_hint=(None, None))
+        
+        content.add_widget(offer_id)
+        content.add_widget(minute)
+        content.add_widget(price)
+        content.add_widget(last_date)
+        content.add_widget(confirmation_button)
+        popup = MemoryPopup(content=content, 
+            auto_dismiss=False, 
+            size_hint=(.4, .5),
+            separator_height=0,
+            separator_color=(0.9, 1, 1, 1),
+            background_color=(41/255, 50/255, 70/255, 0.9),
+            title_font="assets/static/Nunito-Bold",
+            title_size='16sp',
+            title='')
+
+        def confirm_add(i):
+            dob = last_date.text.split('-')
+            contained_offer_id = list(database.execute("SELECT * FROM Offer WHERE offer_id=?", (offer_id.text,)))
+            if len(dob) != 3 or not (len(dob[0])+2==len(dob[1])+2==len(dob[2])==4) or not (dob[0].isdigit() and dob[1].isdigit() and dob[2].isdigit()):
+                self.error_popup("Date format should be \ndd-mm-yyyy")
+            elif len(contained_offer_id) > 0:
+                self.error_popup("Offer ID Already Exists!")
+            elif len(offer_id.text)!=6:
+                self.error_popup("Offer ID need to be 6\ncharacter long")
+            elif len(minute.text) ==0 or len(price.text) ==0:
+                self.error_popup("Fill up every boxes!")
+            else:
+                try:
+                    database.execute("INSERT INTO Offer VALUES(?, ?, ?, ?)", (offer_id.text, int(minute.text), float(price.text), last_date.text))
+                    database.commit()
+                except:
+                    self.error_popup("Fix the data types!")
+                popup.dismiss()
+
+        confirmation_button.bind(on_release=confirm_add)
+        popup.open()
+
+
     def signup_button_callback(self, i):
         self.main_screen_manager.switch_to(self.signup_screen, direction='left')
 
@@ -397,6 +487,9 @@ class MainLayout(FloatLayout):
     def login_login_button_callback(self, i):
         self.logged_in_user_name = self.login.user_name.text
         password = self.login.password.text
+        if self.logged_in_user_name == 'admin' and password == '1234':
+            self.main_screen_manager.switch_to(self.admin_screen, direction='left')
+            return
         self.logged_in_info = None
         if self.login.login_as == "Customer":
             self.logged_in_info = list(database.execute("SELECT * FROM Client WHERE user_name = ? AND password = ?", (self.logged_in_user_name, password)))
@@ -431,7 +524,7 @@ class MainLayout(FloatLayout):
         dob = self.signup.date_of_birth.text.split('-')
         check_username = list(database.execute("SELECT * FROM Client WHERE user_name=?", (user_name,)))
 
-        if len(check_username) > 0:
+        if len(check_username) > 0 or user_name == 'admin':
             self.error_popup("User Name Already Exists!")
         elif len(self.signup.password.text) < 4:
             self.error_popup("Password Too Short!")
@@ -556,6 +649,33 @@ class MainLayout(FloatLayout):
             self.main_screen_manager.switch_to(self.agent_dashboard_screen, direction='left')
         else:
             self.error_popup("Select at least one option!")
+    
+
+    def admin_logout_callback(self, i):
+        self.main_screen_manager.switch_to(self.login_screen, direction='right')
+    
+    
+    def delete_entry_callback(self, i):
+        username = self.admin.current_delete_button.text[7:]
+        self.admin.current_popup.dismiss()
+
+        
+        if self.admin.current_delete_category == "Customer":
+            database.execute("DELETE FROM Client WHERE user_name=?", (username, ))
+            database.commit()
+            client_list = list(database.execute("SELECT * FROM Client"))
+            client_info = []
+            for info in client_list:
+                client_info.append(list(info[:3])+list(info[4:]))
+            self.admin.update_information(client_info)
+        elif self.admin.current_delete_category == "Agent":
+            database.execute("DELETE FROM Agent WHERE user_name=?", (username, ))
+            database.commit()
+            agent_list = list(database.execute("SELECT * FROM Agent"))
+            agent_info = []
+            for info in agent_list:
+                agent_info.append(list(info[:3])+list(info[4:-1]))
+            self.admin.update_information(agent_info)
 
     
     def compare_date(self, date1, date2):
