@@ -79,15 +79,15 @@ class Agent_Dashboard_Widget(FloatLayout):
             color=(1, 1, 1, 1),
             size_hint=(None, None))
         
-        self.receive_call_button = HoverButton((160/255, 198/255, 255/255, 0.7), (160/255, 198/255, 255/255, 0.9), 
-            text="RECEIVE CALL", 
-            background_color=(160/255, 198/255, 255/255, 0.9), 
-            pos=(30, 125), 
-            size=(270, 35),
-            font_name="assets/static/Nunito-Bold",
-            font_size='15sp',
-            color=(1, 1, 1, 1),
-            size_hint=(None, None))
+        # self.receive_call_button = HoverButton((160/255, 198/255, 255/255, 0.7), (160/255, 198/255, 255/255, 0.9), 
+        #     text="RECEIVE CALL", 
+        #     background_color=(160/255, 198/255, 255/255, 0.9), 
+        #     pos=(30, 125), 
+        #     size=(270, 35),
+        #     font_name="assets/static/Nunito-Bold",
+        #     font_size='15sp',
+        #     color=(1, 1, 1, 1),
+        #     size_hint=(None, None))
         self.log_out_button = HoverButton((41/255, 50/255, 70/255, 0.7), (41/255, 50/255, 70/255, 0.9), 
             text="LOG OUT", 
             background_color=(41/255, 50/255, 70/255, 0.9), 
@@ -242,7 +242,7 @@ class Agent_Dashboard_Widget(FloatLayout):
         self.add_widget(self.call_duration)
         self.add_widget(self.category_label)
         self.add_widget(self.category)
-        self.add_widget(self.receive_call_button)
+        # self.add_widget(self.receive_call_button)
         self.add_widget(self.log_out_button)
         self.add_widget(self.status_selection_label)
         self.add_widget(self.status_selection)

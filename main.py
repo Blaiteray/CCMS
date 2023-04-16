@@ -820,7 +820,7 @@ class MainLayout(FloatLayout):
     
 
     def offer_history_button_callback(self, i):
-        history_list = list(database.execute("SELECT o.* FROM Payment p LEFT JOIN Offer o ON p.offer_id=o.offer_id WHERE p.user_name=?", (self.logged_in_user_name,)))
+        history_list = list(database.execute("SELECT o.offer_id, o.minute, o.price, p.date FROM Payment p LEFT JOIN Offer o ON p.offer_id=o.offer_id WHERE p.user_name=?", (self.logged_in_user_name,)))
         self.purchase_history.update_history(history_list)
         self.main_screen_manager.switch_to(self.purchase_history_screen, direction='left')
 

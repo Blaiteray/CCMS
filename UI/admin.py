@@ -17,32 +17,7 @@ from modified_widget import *
 
 
 
-# information_list_client = [
-#     ["UserName1", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 120.2],
-#     ["UserName2", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 120.2],
-#     ["UserName3", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 120.2],
-#     ["UserName4", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 120.2],
-#     ["UserName5", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 120.2],
-#     ["UserName6", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 120.2],
-#     ["UserName7", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 120.2],
-#     ["UserName8", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 120.2],
-#     ["UserName9", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 120.2],
-#     ["UserName0", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 120.2],
-# ]
-# information_list_agent = [
-#     ["Admin2", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["Admin1", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["Admin3", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["Admin4", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["Admin5", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["Admin6", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["Admin7", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["Admin8", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["Admin9", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["Admin0", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["UserNam11", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-#     ["UserNam12", "FName1", "LName1", "Gender", "xx-yy-zzzz", "432432432434", "seysfe@fesff.fesf", 12, 123.4],
-# ]
+
 
 
 class Admin_Widget(FloatLayout):
