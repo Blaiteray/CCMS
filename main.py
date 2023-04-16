@@ -326,7 +326,7 @@ class MainLayout(FloatLayout):
             color=(1, 1, 1, 1),
             size_hint=(None, None))
         purchase_button = HoverButton((82/255, 100/255, 140/255, 0.7), (82/255, 100/255, 140/255, 0.9),
-            text="Purchase Minures", 
+            text="Purchase Minutes", 
             background_color=(82/255, 100/255, 140/255, 0.9),
             pos=(270,215), 
             size=(260, 34),
